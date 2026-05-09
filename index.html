@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navegador de Reconstrução 3D</title>
+    
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        header {
+            padding: 20px;
+            text-align: center;
+            background-color: #242424;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.5rem;
+            color: #64ffda;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        button {
+            background-color: #333;
+            color: white;
+            border: 1px solid #444;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+        button:hover {
+            background-color: #444;
+            border-color: #64ffda;
+        }
+        button.active {
+            background-color: #64ffda;
+            color: #1a1a1a;
+            border-color: #64ffda;
+        }
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+        model-viewer {
+            width: 100%;
+            height: 100%;
+            max-width: 1400px;
+            background-color: #202020;
+            border-radius: 12px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            /* Esconde o botão de AR padrão se não estiver no mobile */
+            --poster-color: transparent;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Comparativo de Captura: Play5</h1>
+        <div class="controls">
+            <button class="model-btn active" data-src="AmbienteLidar.glb">Scan LiDAR</button>
+            <button class="model-btn" data-src="Play5GaussianFotos.glb">Gaussian (Fotos)</button>
+            <button class="model-btn" data-src="Play5GaussianVideo.glb">Gaussian (Vídeo)</button>
+            <button class="model-btn" data-src="Play5Nerf.glb">NeRF</button>
+        </div>
+    </header>
+
+    <main>
+        <model-viewer 
+            id="viewer" 
+            src="AmbienteLidar.glb" 
+            camera-controls 
+            auto-rotate 
+            rotation-per-second="10deg"
+            shadow-intensity="1"
+            exposure="1">
+        </model-viewer>
+    </main>
+
+    <script>
+        const viewer = document.getElementById('viewer');
+        const buttons = document.querySelectorAll('.model-btn');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                // Pega o nome do arquivo configurado no data-src
+                const newSrc = e.target.getAttribute('data-src');
+                
+                // Só troca se for diferente do atual, pra economizar processamento
+                if (viewer.src !== newSrc) {
+                    viewer.src = newSrc;
+                    
+                    // Lógica visual dos botões
+                    buttons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
